@@ -33,45 +33,45 @@ d3.csv("data.csv").then(function(healthData) {
   });
 
   // Scaling
-  xScale1 = d3.LinearScale()
+  xScale1 = d3.scaleLinear()
     .domain([d3.min(healthData, d=>d.age), d3.max(healthData, d=>d.age)])
     .range([0, width]);
-  yScale1 = d3.LinearScale()
+  yScale1 = d3.scaleLinear()
     .domain([d3.min(healthData, d=>d.poverty), d3.max(healthData, d=>d.povery)])
     .range([height, 0]);
     
-  // xScale2 = d3.LinearScale()
+  // xScale2 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.age), d3.max(healthData, d=>d.age)])
   //   .range([0, width]);
-  // yScale2 = d3.LinearScale()
+  // yScale2 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.obesity), d3.max(healthData, d=>d.obesity)])
   //   .range([height, 0]);
 
-  // xScale3 = d3.LinearScale()
+  // xScale3 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.age), d3.max(healthData, d=>d.age)])
   //   .range([0, width]);
-  // yScale3 = d3.LinearScale()
+  // yScale3 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.smokes), d3.max(healthData, d=>d.smokes)])
   //   .range([height, 0]);
   
-  // xScale4 = d3.LinearScale()
+  // xScale4 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.age), d3.max(healthData, d=>d.age)])
   //   .range([0, width]);
-  // yScale4 = d3.LinearScale()
+  // yScale4 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.healthcare), d3.max(healthData, d=>d.healthcare)])
   //   .range([height, 0]);
 
-  // xScale5 = d3.LinearScale()
+  // xScale5 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.income), d3.max(healthData, d=>d.income)])
   //   .range([0, width]);
-  // yScale5 = d3.LinearScale()
+  // yScale5 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.obesity), d3.max(healthData, d=>d.obesity)])
   //   .range([height, 0]);
   
-  // xScale6 = d3.LinearScale()
+  // xScale6 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.income), d3.max(healthData, d=>d.income)])
   //   .range([0, width]);
-  // yScale6 = d3.LinearScale()
+  // yScale6 = d3.scaleLinear()
   //   .domain([d3.min(healthData, d=>d.smokes), d3.max(healthData, d=>d.smokes)])
   //   .range([height, 0]);
 
@@ -89,9 +89,9 @@ d3.csv("data.csv").then(function(healthData) {
   // Add scatter points
   chartGroup.append('g')
   .selectAll("dot")
-  .data(data)
+  .data(healthData)
   .enter()
-  .append("circle")
+  .append("dot")
     .attr("cx", d=>xScale1(d.age))
     .attr("cy", d=> yScale1(d.poverty))
     .attr("r", 10)
@@ -100,36 +100,35 @@ d3.csv("data.csv").then(function(healthData) {
 
   // ToolTip
   var toolTip = d3.tip()
-  .attr("class", "tooltip")
-  .offset([80, -60])
-  .html(function(d) {
-    return (`${d.state}<br>Median Age: ${d.age}<br>Poverty %: ${d.poverty}`);
-  });
+    .attr("class", "tooltip")
+    .offset([80, -60])
+    .html(function(d) {
+      return (`${d.state}<br>Median Age: ${d.age}<br>Poverty %: ${d.poverty}`);
+    });
   
   chartGroup.call(toolTip);
   
   circlesGroup.on("click", function(data) {
     toolTip.show(data, this);
-  });
-
-  .on("mouseout", function(data, index) {
-    toolTip.hide(data);
-  });
+  })
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data);
+    });
 
   // Create Labels
   chartGroup.append("text")
-  .attr("transform", "rotate(-90)")
-  .attr("y", 0 - margin.left + 40)
-  .attr("x", 0 - (height / 2))
-  .attr("dy", "1em")
-  .attr("class", "axisText")
-  .text("Poverty Percentage");
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left + 40)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "1em")
+    .attr("class", "axisText")
+    .text("Poverty Percentage");
 
-chartGroup.append("text")
-  .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-  .attr("class", "axisText")
-  .text("Age");
-  
-}).catch(function(error) {
-console.log(error);
-});
+  chartGroup.append("text")
+    .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+    .attr("class", "axisText")
+    .text("Age");
+
+  }).catch(function(error) {
+    console.log(error);
+  });
