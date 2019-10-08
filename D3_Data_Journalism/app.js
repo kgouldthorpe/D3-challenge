@@ -99,3 +99,37 @@ d3.csv("data.csv").then(function(healthData) {
     .attr("opacity", ".5");
 
   // ToolTip
+  var toolTip = d3.tip()
+  .attr("class", "tooltip")
+  .offset([80, -60])
+  .html(function(d) {
+    return (`${d.state}<br>Median Age: ${d.age}<br>Poverty %: ${d.poverty}`);
+  });
+  
+  chartGroup.call(toolTip);
+  
+  circlesGroup.on("click", function(data) {
+    toolTip.show(data, this);
+  });
+
+  .on("mouseout", function(data, index) {
+    toolTip.hide(data);
+  });
+
+  // Create Labels
+  chartGroup.append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0 - margin.left + 40)
+  .attr("x", 0 - (height / 2))
+  .attr("dy", "1em")
+  .attr("class", "axisText")
+  .text("Poverty Percentage");
+
+chartGroup.append("text")
+  .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+  .attr("class", "axisText")
+  .text("Age");
+  
+}).catch(function(error) {
+console.log(error);
+});
