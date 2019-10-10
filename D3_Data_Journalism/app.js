@@ -12,7 +12,7 @@ var margin = {
 // Create SVG Wrapper
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
-var svg = d3.select(".chart")
+var svg = d3.select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -21,23 +21,19 @@ var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Import Data
-d3.csv("data.csv").then(function(healthData) {
+d3.csv("data.csv").then(function(healthData){
   healthData.forEach(function(data){
-    data.state = +data.state;
     data.poverty = +data.poverty;
-    data.age = +data.age;
-    data.income = +data.income;
     data.healthcare = +data.healthcare;
-    data.obesity = +data.obesity;
-    data.smokes = +data.smokes;
+  
+    // console.log(healthData);
   });
-
   // Scaling
   xScale1 = d3.scaleLinear()
-    .domain([d3.min(healthData, d=>d.age), d3.max(healthData, d=>d.age)])
+    .domain([d3.min(healthData, d=>parseFloat(d.healthcare)), d3.max(healthData, d=>parseFloat(d.healthcare))])
     .range([0, width]);
   yScale1 = d3.scaleLinear()
-    .domain([d3.min(healthData, d=>d.poverty), d3.max(healthData, d=>d.povery)])
+    .domain([d3.min(healthData, d=>parseFloat(d.poverty)), d3.max(healthData, d=>parseFloat(d.poverty))])
     .range([height, 0]);
     
   // xScale2 = d3.scaleLinear()
@@ -87,28 +83,28 @@ d3.csv("data.csv").then(function(healthData) {
   .call(leftAxis);
 
   // Add scatter points
-  chartGroup.append('g')
-  .selectAll("dot")
+  var circleGroup = chartGroup
+  .selectAll("circle")
   .data(healthData)
   .enter()
-  .append("dot")
-    .attr("cx", d=>xScale1(d.age))
-    .attr("cy", d=> yScale1(d.poverty))
-    .attr("r", 10)
-    .style("fill", "viridis")
-    .attr("opacity", ".5");
+  .append("circle")
+    .attr("cx", d=>xScale1(Number((d.healthcare))))
+    .attr("cy", d=>yScale1(Number((d.poverty))))
+    .attr("r", 5)
+    .style("fill", "122E70");
+    // .attr("opacity", ".5");
 
   // ToolTip
   var toolTip = d3.tip()
     .attr("class", "tooltip")
     .offset([80, -60])
     .html(function(d) {
-      return (`${d.state}<br>Median Age: ${d.age}<br>Poverty %: ${d.poverty}`);
+      return (`${d.state}<br>Without Healthcare (%): ${d.healthcare}<br>In Poverty (%): ${d.poverty}`);
     });
   
   chartGroup.call(toolTip);
   
-  circlesGroup.on("click", function(data) {
+  circleGroup.on("click", function(data) {
     toolTip.show(data, this);
   })
     .on("mouseout", function(data, index) {
@@ -122,12 +118,12 @@ d3.csv("data.csv").then(function(healthData) {
     .attr("x", 0 - (height / 2))
     .attr("dy", "1em")
     .attr("class", "axisText")
-    .text("Poverty Percentage");
+    .text("In Poverty (%)");
 
   chartGroup.append("text")
     .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
     .attr("class", "axisText")
-    .text("Age");
+    .text("Without Healthcare (%)");
 
   }).catch(function(error) {
     console.log(error);
